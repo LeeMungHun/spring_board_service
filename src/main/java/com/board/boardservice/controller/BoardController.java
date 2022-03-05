@@ -1,7 +1,8 @@
 package com.board.boardservice.controller;
 
-import com.board.boardservice.domain.Board;
-import com.board.boardservice.domain.BoardRepository;
+import com.board.boardservice.domain.entity.Board;
+import com.board.boardservice.dto.BoardDto;
+import com.board.boardservice.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,19 +16,19 @@ import java.util.List;
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 public class BoardController {
-    private final BoardRepository boardRepository;
+        private final BoardService boardService;
 
     @GetMapping
     public String boards(Model model) {
-        List<Board> boards = boardRepository.findAll();
+        List<BoardDto> boards = boardService.findAll();
         model.addAttribute("boards", boards);
         return "board/boards";
     }
 
     @GetMapping("/{boardId}")
     public String board(@PathVariable long boardId,Model model){
-        Board board = boardRepository.findBoard(boardId);
-        model.addAttribute("board", board);
+        BoardDto boardDto = boardService.findBoard(boardId);
+        model.addAttribute("board", boardDto);
         return "board/board";
     }
 
@@ -37,8 +38,8 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public String writeBoard(@ModelAttribute Board board, RedirectAttributes redirectAttributes) {
-        Board saveBoard = boardRepository.save(board);
+    public String writeBoard(@ModelAttribute BoardDto boardDto, RedirectAttributes redirectAttributes) {
+        Board saveBoard = boardService.save(boardDto);
         redirectAttributes.addAttribute("boardId", saveBoard.getId());
         redirectAttributes.addAttribute("add_status", true);
         return "redirect:/boards/{boardId}";
@@ -46,23 +47,23 @@ public class BoardController {
 
     @GetMapping("/{boardId}/edit")
     public String editForm(@PathVariable Long boardId,Model model) {
-        Board board = boardRepository.findBoard(boardId);
-        model.addAttribute("board", board);
+        BoardDto boardDto = boardService.findBoard(boardId);
+        model.addAttribute("board", boardDto);
         return "board/editForm";
     }
 
     @PostMapping("/{boardId}/edit")
-    public String edit(@PathVariable Long boardId,@ModelAttribute Board board,
+    public String edit(@PathVariable Long boardId,@ModelAttribute BoardDto boardDto,
                        RedirectAttributes redirectAttributes) {
-        boardRepository.update(boardId, board);
+        boardService.update(boardId, boardDto);
         redirectAttributes.addAttribute("edit_status", true);
         return "redirect:/boards/{boardId}";
     }
 
     @PostConstruct
     public void init(){
-        boardRepository.save(new Board("title1", "content1", "작성자1"));
-        boardRepository.save(new Board("title2", "content2", "작성자2"));
+        boardService.save(new BoardDto(10L,"title1", "content1", "작성자1"));
+        boardService.save(new BoardDto(11L,"title2", "content2", "작성자2"));
     }
 
 

@@ -1,5 +1,6 @@
-package com.board.boardservice.domain;
+package com.board.boardservice.domain.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,7 +29,9 @@ public class Board {
     private Board() {
     }
 
-    public Board(String title, String content, String writer) {
+    @Builder
+    public Board(Long id, String title, String content, String writer) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.writer = writer;
